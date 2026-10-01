@@ -1,72 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Santa Model Test</title>
+    <meta charset="UTF-8">
+    <title>Santa 3D Model Test</title>
 
-<style>
-html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#55aaff;
-}
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #111;
+        }
 
-#info{
-    position:fixed;
-    top:15px;
-    left:15px;
-    z-index:100;
-    padding:14px 18px;
-    background:rgba(0,0,0,.85);
-    color:white;
-    font-family:Arial,sans-serif;
-    font-size:16px;
-    border-radius:8px;
-}
-</style>
+        #status {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            color: white;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 10px 15px;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="info">🎅 Loading Santa...</div>
+<div id="status">🎅 Loading Santa...</div>
 
-<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script type="module">
 
-<script>
+import * as THREE from
+    "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js";
+
+import { GLTFLoader } from
+    "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js";
+
+
+/* =========================
+   SCENE
+========================= */
 
 const scene = new THREE.Scene();
 
-scene.background =
-    new THREE.Color(0x55aaff);
+scene.background = new THREE.Color(0x111111);
 
 
-// CAMERA
+/* =========================
+   CAMERA
+========================= */
 
-const camera =
-    new THREE.PerspectiveCamera(
-        50,
-        window.innerWidth /
-        window.innerHeight,
-        0.001,
-        1000000
-    );
-
-camera.position.set(
-    0,
-    2,
-    15
+const camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.01,
+    10000
 );
 
+camera.position.set(0, 2, 8);
 
-// RENDERER
 
-const renderer =
-    new THREE.WebGLRenderer({
-        antialias:true
-    });
+/* =========================
+   RENDERER
+========================= */
+
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
 
 renderer.setSize(
     window.innerWidth,
@@ -74,302 +75,162 @@ renderer.setSize(
 );
 
 renderer.setPixelRatio(
-    Math.min(
-        window.devicePixelRatio,
-        2
-    )
+    window.devicePixelRatio
 );
-
-renderer.outputEncoding =
-    THREE.sRGBEncoding;
 
 document.body.appendChild(
     renderer.domElement
 );
 
 
-// LIGHTS
+/* =========================
+   LIGHTING
+========================= */
 
-scene.add(
+const ambientLight =
     new THREE.AmbientLight(
         0xffffff,
-        10
-    )
-);
-
-const light =
-    new THREE.DirectionalLight(
-        0xffffff,
-        10
+        2
     );
 
-light.position.set(
+scene.add(ambientLight);
+
+
+const directionalLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
+
+directionalLight.position.set(
+    5,
     10,
-    20,
-    20
+    5
 );
 
-scene.add(light);
+scene.add(directionalLight);
 
 
-// TEST CUBE
+/* =========================
+   RED TEST CUBE
+========================= */
+
+const cubeGeometry =
+    new THREE.BoxGeometry(
+        1,
+        1,
+        1
+    );
+
+const cubeMaterial =
+    new THREE.MeshBasicMaterial({
+        color: 0xff0000
+    });
 
 const cube =
     new THREE.Mesh(
-        new THREE.BoxGeometry(
-            2,
-            2,
-            2
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0xff0000
-        })
+        cubeGeometry,
+        cubeMaterial
     );
 
-cube.position.x = 6;
+cube.position.set(
+    4,
+    0,
+    0
+);
 
 scene.add(cube);
 
 
-// LOAD SANTA
+/* =========================
+   SANTA MODEL
+========================= */
+
+// YOUR ACTUAL GLB FILE
+const MODEL_FILE =
+    "santas_convey_petrified.glb";
+
+
+/* =========================
+   LOAD SANTA
+========================= */
 
 const loader =
-    new THREE.GLTFLoader();
+    new GLTFLoader();
 
 loader.load(
 
-    "./santa.gltf",
+    MODEL_FILE,
 
-    function(gltf){
+    function(gltf) {
 
-        const original =
+        console.log(
+            "🎅 SANTA GLB LOADED!"
+        );
+
+        console.log(
+            gltf
+        );
+
+        const santa =
             gltf.scene;
 
 
-        const allMeshes = [];
-
-
-        original.traverse(
-            function(object){
-
-                if(object.isMesh){
-
-                    allMeshes.push(
-                        object
-                    );
-
-                }
-
-            }
-        );
-
-
-        console.log(
-            "TOTAL MESHES:",
-            allMeshes.length
-        );
-
-
-        // FIND THE NORMAL-SIZED OBJECTS
-        // AND IGNORE HUGE BASEPLATE
-
-        const meshInfo = [];
-
-
-        allMeshes.forEach(
-            function(mesh){
-
-                mesh.updateWorldMatrix(
-                    true,
-                    false
-                );
-
-
-                const box =
-                    new THREE.Box3()
-                        .setFromObject(mesh);
-
-
-                const size =
-                    new THREE.Vector3();
-
-                box.getSize(size);
-
-
-                const largest =
-                    Math.max(
-                        size.x,
-                        size.y,
-                        size.z
-                    );
-
-
-                meshInfo.push({
-                    mesh:mesh,
-                    size:largest,
-                    box:box
-                });
-
-            }
-        );
-
-
-        console.log(
-            "MESH SIZES:",
-            meshInfo
-        );
-
-
-        // SORT FROM SMALLEST TO LARGEST
-
-        meshInfo.sort(
-            function(a,b){
-                return a.size - b.size;
-            }
-        );
-
-
-        // USE THE 90th PERCENTILE AS A
-        // REASONABLE SIZE LIMIT
-
-        const sizes =
-            meshInfo.map(
-                function(item){
-                    return item.size;
-                }
-            );
-
-
-        const limitIndex =
-            Math.floor(
-                sizes.length * 0.90
-            );
-
-
-        const sizeLimit =
-            sizes[
-                Math.max(
-                    0,
-                    limitIndex - 1
-                )
-            ];
-
-
-        console.log(
-            "BASEPLATE FILTER SIZE:",
-            sizeLimit
-        );
-
-
-        // CREATE CLEAN GROUP
-
-        const santa =
-            new THREE.Group();
+        /* ---------------------
+           ADD SANTA
+        --------------------- */
 
         scene.add(
             santa
         );
 
 
-        let kept = 0;
+        /* ---------------------
+           FIND MODEL SIZE
+        --------------------- */
 
-
-        meshInfo.forEach(
-            function(info){
-
-                // Ignore enormous objects
-
-                if(
-                    info.size >
-                    sizeLimit * 3
-                ){
-
-                    console.log(
-                        "IGNORING LARGE MESH:",
-                        info.mesh.name,
-                        info.size
-                    );
-
-                    return;
-                }
-
-
-                const clone =
-                    info.mesh.clone(true);
-
-
-                info.mesh.matrixWorld.decompose(
-                    clone.position,
-                    clone.quaternion,
-                    clone.scale
-                );
-
-
-                clone.material =
-                    new THREE.MeshBasicMaterial({
-                        color:0xff00ff,
-                        side:THREE.DoubleSide
-                    });
-
-
-                clone.frustumCulled =
-                    false;
-
-
-                santa.add(
-                    clone
-                );
-
-
-                kept++;
-
-            }
-        );
-
-
-        console.log(
-            "KEPT MESHES:",
-            kept
-        );
-
-
-        // CLEAN BOUNDING BOX
-
-        let box =
+        const box =
             new THREE.Box3()
-                .setFromObject(santa);
-
+                .setFromObject(
+                    santa
+                );
 
         const size =
-            new THREE.Vector3();
-
-        box.getSize(size);
-
+            box.getSize(
+                new THREE.Vector3()
+            );
 
         const center =
-            new THREE.Vector3();
-
-        box.getCenter(center);
+            box.getCenter(
+                new THREE.Vector3()
+            );
 
 
         console.log(
-            "CLEAN SIZE:",
+            "Santa size:",
             size
         );
 
 
-        // CENTER
+        /* ---------------------
+           CENTER MODEL
+        --------------------- */
 
-        santa.position.set(
-            -center.x,
-            -center.y,
-            -center.z
-        );
+        santa.position.x -=
+            center.x;
+
+        santa.position.y -=
+            center.y;
+
+        santa.position.z -=
+            center.z;
 
 
-        // SCALE
+        /* ---------------------
+           AUTO SCALE
+        --------------------- */
 
-        const biggest =
+        const largestDimension =
             Math.max(
                 size.x,
                 size.y,
@@ -377,76 +238,131 @@ loader.load(
             );
 
 
-        let scale =
-            5 / biggest;
+        if (
+            largestDimension > 0
+        ) {
 
+            const targetSize = 4;
 
-        if(
-            !isFinite(scale) ||
-            scale <= 0
-        ){
+            const scale =
+                targetSize /
+                largestDimension;
 
-            scale = 1;
+            santa.scale.setScalar(
+                scale
+            );
 
+            console.log(
+                "Santa scale:",
+                scale
+            );
         }
 
 
-        santa.scale.set(
-            scale,
-            scale,
-            scale
-        );
-
-
-        // MOVE SLIGHTLY FORWARD
-
-        santa.position.z = 0;
-
+        /* ---------------------
+           STATUS
+        --------------------- */
 
         document.getElementById(
-            "info"
+            "status"
         ).textContent =
-            "🎅 Filtered Santa — " +
-            kept +
-            " meshes";
+            "🎅 Santa loaded successfully!";
 
+
+        /* ---------------------
+           COUNT MESHES
+        --------------------- */
+
+        let meshCount = 0;
+
+        santa.traverse(
+            function(object) {
+
+                if (
+                    object.isMesh
+                ) {
+
+                    meshCount++;
+
+                }
+
+            }
+        );
 
         console.log(
-            "🎅 BASEPLATE FILTER COMPLETE"
+            "Santa meshes:",
+            meshCount
         );
 
     },
 
-    undefined,
 
-    function(error){
+    /* =========================
+       LOADING PROGRESS
+    ========================= */
+
+    function(xhr) {
+
+        if (xhr.total) {
+
+            const percent =
+                Math.round(
+                    (
+                        xhr.loaded /
+                        xhr.total
+                    ) * 100
+                );
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                "🎅 Loading Santa... " +
+                percent +
+                "%";
+
+        }
+
+    },
+
+
+    /* =========================
+       ERROR
+    ========================= */
+
+    function(error) {
 
         console.error(
+            "❌ SANTA LOAD ERROR:",
             error
         );
 
         document.getElementById(
-            "info"
+            "status"
         ).textContent =
-            "❌ Santa failed";
+            "❌ Santa could not load. Check the GLB filename.";
 
     }
+
 );
 
 
-// ANIMATION
+/* =========================
+   ANIMATION
+========================= */
 
-function animate(){
+function animate() {
 
     requestAnimationFrame(
         animate
     );
+
 
     cube.rotation.x +=
         0.01;
 
     cube.rotation.y +=
         0.01;
+
 
     renderer.render(
         scene,
@@ -458,11 +374,13 @@ function animate(){
 animate();
 
 
-// RESIZE
+/* =========================
+   WINDOW RESIZE
+========================= */
 
 window.addEventListener(
     "resize",
-    function(){
+    function() {
 
         camera.aspect =
             window.innerWidth /
