@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Santa Tracker Test</title>
+<title>Santa Tracker</title>
 
 <style>
 html, body {
@@ -20,63 +20,65 @@ html, body {
     position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 10;
+    z-index: 20;
     color: white;
-    background: rgba(0,0,0,.8);
+    background: rgba(0,0,0,0.85);
     padding: 15px;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
     border-radius: 8px;
 }
-
-#error {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 20;
-    color: red;
-    background: black;
-    padding: 15px;
-    font-family: Arial;
-    display: none;
-}
 </style>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- GLTF LOADER MUST COME BEFORE OUR CODE -->
+<script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
+
 </head>
 
 <body>
 
 <div id="status">
-    🌎 EARTH STARTING...
+    🌎 Starting...
 </div>
-
-<div id="error"></div>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
 
-/* =====================================================
-   BASIC THREE.JS
-===================================================== */
+/* ==========================================
+   SCENE
+========================================== */
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0x000000);
+scene.background =
+    new THREE.Color(0x000000);
 
 
-const camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
-);
+/* ==========================================
+   CAMERA
+========================================== */
 
-camera.position.z = 7;
+const camera =
+    new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100
+    );
+
+camera.position.z = 5;
 
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true
-});
+/* ==========================================
+   RENDERER
+========================================== */
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true
+    });
 
 renderer.setSize(
     window.innerWidth,
@@ -88,14 +90,15 @@ document.body.appendChild(
 );
 
 
-/* =====================================================
+/* ==========================================
    LIGHT
-===================================================== */
+========================================== */
 
-const light = new THREE.DirectionalLight(
-    0xffffff,
-    3
-);
+const light =
+    new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
 
 light.position.set(
     5,
@@ -106,17 +109,17 @@ light.position.set(
 scene.add(light);
 
 
-const ambient = new THREE.AmbientLight(
-    0xffffff,
-    1
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        1
+    )
 );
 
-scene.add(ambient);
 
-
-/* =====================================================
+/* ==========================================
    EARTH
-===================================================== */
+========================================== */
 
 const earthGeometry =
     new THREE.SphereGeometry(
@@ -128,7 +131,7 @@ const earthGeometry =
 
 const earthMaterial =
     new THREE.MeshPhongMaterial({
-        color: 0x1677cc
+        color: 0x1687ff
     });
 
 
@@ -141,16 +144,14 @@ const earth =
 scene.add(earth);
 
 
-/* =====================================================
-   SANTA
-===================================================== */
+/* ==========================================
+   SANTA GROUP
+========================================== */
 
 const santaGroup =
     new THREE.Group();
 
-scene.add(
-    santaGroup
-);
+scene.add(santaGroup);
 
 
 /*
@@ -161,45 +162,52 @@ scene.add(
 santaGroup.position.set(
     0,
     0,
-    2.4
+    2.5
 );
 
 
-/* =====================================================
-   LOAD GLB
-===================================================== */
+/* ==========================================
+   LOAD SANTA
+========================================== */
 
-const gltfLoader =
+document.getElementById(
+    "status"
+).innerHTML =
+    "🌎 Earth working<br>🎅 Loading Santa...";
+
+
+const loader =
     new THREE.GLTFLoader();
 
 
-gltfLoader.load(
+loader.load(
 
     "santa_-_norad_santa_tracker.glb",
 
     function(gltf) {
 
+        console.log(
+            "SANTA MODEL LOADED!",
+            gltf
+        );
+
+
         const model =
             gltf.scene;
 
 
-        /*
-           Find model size.
-        */
+        /* FIND SIZE */
 
         const box =
             new THREE.Box3()
-                .setFromObject(
-                    model
-                );
+                .setFromObject(model);
 
 
         const size =
             new THREE.Vector3();
 
-        box.getSize(
-            size
-        );
+
+        box.getSize(size);
 
 
         const biggest =
@@ -210,9 +218,13 @@ gltfLoader.load(
             );
 
 
-        /*
-           Make Santa visible.
-        */
+        console.log(
+            "Santa model size:",
+            size
+        );
+
+
+        /* SCALE */
 
         if (biggest > 0) {
 
@@ -223,19 +235,15 @@ gltfLoader.load(
         }
 
 
-        /*
-           Center model.
-        */
+        /* CENTER */
 
-        const newBox =
+        const centeredBox =
             new THREE.Box3()
-                .setFromObject(
-                    model
-                );
+                .setFromObject(model);
 
 
         const center =
-            newBox.getCenter(
+            centeredBox.getCenter(
                 new THREE.Vector3()
             );
 
@@ -245,6 +253,8 @@ gltfLoader.load(
         );
 
 
+        /* ADD MODEL */
+
         santaGroup.add(
             model
         );
@@ -253,47 +263,54 @@ gltfLoader.load(
         document.getElementById(
             "status"
         ).innerHTML =
-            "🌎 EARTH WORKING<br>🎅 SANTA LOADED";
+            "🌎 EARTH WORKING<br>🎅 SANTA LOADED ✅";
 
 
     },
 
-    function(xhr) {
+    function(progress) {
 
-        document.getElementById(
-            "status"
-        ).innerHTML =
-            "🌎 EARTH WORKING<br>🎅 LOADING SANTA...";
+        if (progress.total > 0) {
+
+            const percent =
+                Math.round(
+                    progress.loaded /
+                    progress.total *
+                    100
+                );
+
+            document.getElementById(
+                "status"
+            ).innerHTML =
+                "🌎 EARTH WORKING<br>🎅 Loading Santa " +
+                percent +
+                "%...";
+
+        }
 
     },
 
     function(error) {
 
-        console.error(error);
+        console.error(
+            "SANTA LOAD ERROR:",
+            error
+        );
 
-        document.getElementById(
-            "error"
-        ).style.display =
-            "block";
-
-        document.getElementById(
-            "error"
-        ).textContent =
-            "SANTA GLB FAILED TO LOAD";
 
         document.getElementById(
             "status"
         ).innerHTML =
-            "🌎 EARTH WORKING<br>❌ SANTA FAILED";
+            "🌎 EARTH WORKING<br>❌ SANTA FAILED TO LOAD";
 
     }
 
 );
 
 
-/* =====================================================
+/* ==========================================
    ANIMATION
-===================================================== */
+========================================== */
 
 function animate() {
 
@@ -301,10 +318,6 @@ function animate() {
         animate
     );
 
-
-    /*
-       Slowly rotate Earth.
-    */
 
     earth.rotation.y += 0.002;
 
@@ -316,12 +329,13 @@ function animate() {
 
 }
 
+
 animate();
 
 
-/* =====================================================
+/* ==========================================
    RESIZE
-===================================================== */
+========================================== */
 
 window.addEventListener(
     "resize",
@@ -342,9 +356,6 @@ window.addEventListener(
 );
 
 </script>
-
-<!-- GLTF LOADER -->
-<script src="https://threejs.org/examples/js/loaders/GLTFLoader.js"></script>
 
 </body>
 </html>
