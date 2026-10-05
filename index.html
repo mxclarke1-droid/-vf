@@ -1,10 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Santa Tracker — North Pole Tracking Network</title>
+<title>Santa Tracker</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
@@ -16,7 +17,7 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #000;
+    background: black;
     font-family: Arial, sans-serif;
 }
 
@@ -24,16 +25,16 @@ html, body {
     position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 20;
+    z-index: 10;
     color: white;
-    background: rgba(0,0,0,0.8);
-    padding: 15px 18px;
+    background: rgba(0,0,0,0.82);
+    padding: 16px 20px;
     border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
 }
 
 #title {
-    font-size: 20px;
+    font-size: 21px;
     font-weight: bold;
 }
 
@@ -43,32 +44,25 @@ html, body {
     font-size: 14px;
 }
 
-#modelStatus {
-    margin-top: 5px;
-    color: #00ff66;
-    font-size: 13px;
-}
-
-#startButton {
+button {
     margin-top: 12px;
-    padding: 10px 18px;
+    padding: 9px 16px;
     border: none;
     border-radius: 7px;
-    background: #d71920;
-    color: white;
-    font-weight: bold;
     cursor: pointer;
+    font-weight: bold;
 }
 
-#startButton.active {
-    background: #159447;
+#musicButton {
+    background: #b5121b;
+    color: white;
 }
 
 #error {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    z-index: 30;
+    z-index: 20;
     color: #ff4444;
     background: rgba(0,0,0,0.9);
     padding: 12px;
@@ -91,26 +85,33 @@ html, body {
     </div>
 
     <div id="status">
-        STARTING EARTH...
+        🌎 Loading Earth...
     </div>
 
-    <div id="modelStatus">
-        SANTA MODEL: LOADING...
-    </div>
-
-    <button id="startButton">
-        START TRACKING
+    <button id="musicButton">
+        🎵 PLAY CHRISTMAS JAZZ
     </button>
 
 </div>
 
 <div id="error"></div>
 
+
+<!-- MUSIC -->
+
+<audio id="christmasMusic" loop>
+    <source
+        src="pulsebox-jazz-christmas-432315.mp3"
+        type="audio/mpeg"
+    >
+</audio>
+
+
 <script>
 
-/* =========================================================
+/* =====================================================
    SCENE
-========================================================= */
+===================================================== */
 
 const scene = new THREE.Scene();
 
@@ -118,23 +119,17 @@ scene.background =
     new THREE.Color(0x000000);
 
 
-/* =========================================================
+/* =====================================================
    CAMERA
-========================================================= */
+===================================================== */
 
 const camera =
     new THREE.PerspectiveCamera(
         45,
-        window.innerWidth /
-        window.innerHeight,
+        window.innerWidth / window.innerHeight,
         0.1,
-        1000
+        100
     );
-
-/*
-   FARTHER BACK so the entire Earth
-   is visible immediately.
-*/
 
 camera.position.set(
     0,
@@ -149,9 +144,9 @@ camera.lookAt(
 );
 
 
-/* =========================================================
+/* =====================================================
    RENDERER
-========================================================= */
+===================================================== */
 
 const renderer =
     new THREE.WebGLRenderer({
@@ -175,9 +170,9 @@ document.body.appendChild(
 );
 
 
-/* =========================================================
+/* =====================================================
    CONTROLS
-========================================================= */
+===================================================== */
 
 const controls =
     new THREE.OrbitControls(
@@ -188,3 +183,459 @@ const controls =
 controls.enableDamping = true;
 
 controls.dampingFactor = 0.05;
+
+controls.minDistance = 3;
+
+controls.maxDistance = 15;
+
+
+/* =====================================================
+   LIGHTING
+===================================================== */
+
+const ambientLight =
+    new THREE.AmbientLight(
+        0xffffff,
+        1.5
+    );
+
+scene.add(
+    ambientLight
+);
+
+
+const sun =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.5
+    );
+
+sun.position.set(
+    5,
+    5,
+    5
+);
+
+scene.add(
+    sun
+);
+
+
+/* =====================================================
+   EARTH
+===================================================== */
+
+const EARTH_RADIUS = 2;
+
+
+/*
+   Start with a blue material.
+   This guarantees the Earth
+   remains visible even if the
+   texture takes a moment to load.
+*/
+
+const earthGeometry =
+    new THREE.SphereGeometry(
+        EARTH_RADIUS,
+        96,
+        96
+    );
+
+
+const earthMaterial =
+    new THREE.MeshPhongMaterial({
+        color: 0x2277cc
+    });
+
+
+const earth =
+    new THREE.Mesh(
+        earthGeometry,
+        earthMaterial
+    );
+
+scene.add(
+    earth
+);
+
+
+/* =====================================================
+   EARTH TEXTURE
+===================================================== */
+
+const textureLoader =
+    new THREE.TextureLoader();
+
+
+textureLoader.load(
+
+    "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
+
+    function(texture) {
+
+        earth.material.map =
+            texture;
+
+        earth.material.color.set(
+            0xffffff
+        );
+
+        earth.material.needsUpdate =
+            true;
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🌎 EARTH READY — LOADING SANTA...";
+
+    },
+
+    undefined,
+
+    function(error) {
+
+        console.log(
+            "Earth texture failed to load."
+        );
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🌎 EARTH READY — USING BACKUP TEXTURE";
+
+    }
+
+);
+
+
+/* =====================================================
+   ATMOSPHERE
+===================================================== */
+
+const atmosphereGeometry =
+    new THREE.SphereGeometry(
+        2.06,
+        64,
+        64
+    );
+
+
+const atmosphereMaterial =
+    new THREE.MeshBasicMaterial({
+
+        color: 0x3399ff,
+
+        transparent: true,
+
+        opacity: 0.10,
+
+        side: THREE.BackSide
+
+    });
+
+
+const atmosphere =
+    new THREE.Mesh(
+        atmosphereGeometry,
+        atmosphereMaterial
+    );
+
+scene.add(
+    atmosphere
+);
+
+
+/* =====================================================
+   SANTA GROUP
+===================================================== */
+
+const santaGroup =
+    new THREE.Group();
+
+scene.add(
+    santaGroup
+);
+
+
+/*
+   Earth radius = 2
+
+   Santa radius = 2.25
+
+   This puts Santa just above
+   the surface.
+*/
+
+const SANTA_RADIUS = 2.25;
+
+const SANTA_SIZE = 0.50;
+
+
+/*
+   Put Santa directly in front
+   of Earth so we can definitely
+   see him when the page opens.
+*/
+
+santaGroup.position.set(
+    0,
+    0,
+    SANTA_RADIUS
+);
+
+
+/* =====================================================
+   LOAD SANTA GLB
+===================================================== */
+
+const loader =
+    new THREE.GLTFLoader();
+
+
+loader.load(
+
+    "santa_-_norad_santa_tracker.glb",
+
+    function(gltf) {
+
+        const santaModel =
+            gltf.scene;
+
+
+        /* ---------------------------------------------
+           FIND MODEL SIZE
+        --------------------------------------------- */
+
+        const box =
+            new THREE.Box3()
+                .setFromObject(
+                    santaModel
+                );
+
+
+        const size =
+            new THREE.Vector3();
+
+        box.getSize(
+            size
+        );
+
+
+        const largest =
+            Math.max(
+                size.x,
+                size.y,
+                size.z
+            );
+
+
+        /* ---------------------------------------------
+           SCALE MODEL
+        --------------------------------------------- */
+
+        if (largest > 0) {
+
+            santaModel.scale.setScalar(
+                SANTA_SIZE / largest
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           CENTER MODEL
+        --------------------------------------------- */
+
+        const centeredBox =
+            new THREE.Box3()
+                .setFromObject(
+                    santaModel
+                );
+
+
+        const center =
+            centeredBox.getCenter(
+                new THREE.Vector3()
+            );
+
+
+        santaModel.position.sub(
+            center
+        );
+
+
+        /*
+           Correction for the direction
+           the model faces.
+        */
+
+        santaModel.rotation.y =
+            -Math.PI / 2;
+
+
+        /* ---------------------------------------------
+           ADD SANTA
+        --------------------------------------------- */
+
+        santaGroup.add(
+            santaModel
+        );
+
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🌎 EARTH READY — 🎅 SANTA READY";
+
+
+    },
+
+    function(xhr) {
+
+        if (xhr.total > 0) {
+
+            const percent =
+                Math.round(
+                    xhr.loaded /
+                    xhr.total *
+                    100
+                );
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                "🎅 Loading Santa " +
+                percent +
+                "%...";
+
+        }
+
+    },
+
+    function(error) {
+
+        console.error(
+            "Santa GLB error:",
+            error
+        );
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🌎 EARTH READY — SANTA FAILED TO LOAD";
+
+
+        const errorBox =
+            document.getElementById(
+                "error"
+            );
+
+        errorBox.style.display =
+            "block";
+
+        errorBox.textContent =
+            "Santa model could not load. Make sure santa_-_norad_santa_tracker.glb is in the same folder as index.html.";
+
+    }
+
+);
+
+
+/* =====================================================
+   MUSIC
+===================================================== */
+
+const music =
+    document.getElementById(
+        "christmasMusic"
+    );
+
+
+const musicButton =
+    document.getElementById(
+        "musicButton"
+    );
+
+
+musicButton.addEventListener(
+    "click",
+    function() {
+
+        if (music.paused) {
+
+            music.play()
+                .then(function() {
+
+                    musicButton.textContent =
+                        "🔊 CHRISTMAS JAZZ ON";
+
+                })
+                .catch(function(error) {
+
+                    console.log(error);
+
+                });
+
+        } else {
+
+            music.pause();
+
+            musicButton.textContent =
+                "🎵 PLAY CHRISTMAS JAZZ";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+    controls.update();
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+animate();
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    function() {
+
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+```
