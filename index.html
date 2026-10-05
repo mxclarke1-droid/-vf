@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Santa Tracker — North Pole Tracking Network</title>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -10,6 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -33,7 +35,7 @@ body {
     left: 0;
     right: 0;
     height: 74px;
-    background: rgba(5, 12, 20, .92);
+    background: rgba(5,12,20,.92);
     border-bottom: 1px solid rgba(255,255,255,.2);
     display: flex;
     align-items: center;
@@ -191,6 +193,7 @@ body {
     color: white;
     float: right;
 }
+
 </style>
 </head>
 
@@ -199,21 +202,37 @@ body {
 <div id="globe"></div>
 
 <div id="topBar">
+
     <div class="logo">
+
         <div class="logoSanta">🎅</div>
+
         <div class="logoText">
             SANTA TRACKER
             <small>NORTH POLE TRACKING NETWORK</small>
         </div>
+
     </div>
 
-    <button id="startButton">START TRACKING</button>
-    <button id="musicButton">🎵 MUSIC</button>
-    <button id="parentButton">⚙ PARENT SETTINGS</button>
+    <button id="startButton">
+        START TRACKING
+    </button>
+
+    <button id="musicButton">
+        🎵 MUSIC
+    </button>
+
+    <button id="parentButton">
+        ⚙ PARENT SETTINGS
+    </button>
+
 </div>
 
 <div id="infoPanel">
-    <div class="panelTitle">NORTH POLE TRACKING NETWORK</div>
+
+    <div class="panelTitle">
+        NORTH POLE TRACKING NETWORK
+    </div>
 
     <div class="row">
         <span class="label">Status</span>
@@ -254,16 +273,23 @@ body {
         <span class="label">Radio Signal</span>
         <span class="value">▮▮▮▮</span>
     </div>
+
 </div>
 
-<div id="loading">Loading Santa's sleigh...</div>
+<div id="loading">
+    Loading Santa's sleigh...
+</div>
 
 <div id="parentModal">
+
     <div class="modal">
+
         <h2>Parent Settings</h2>
 
         <label>State / Region</label>
+
         <select id="stateSelect">
+
             <option value="GA">Georgia</option>
             <option value="NY">New York</option>
             <option value="CA">California</option>
@@ -274,69 +300,144 @@ body {
             <option value="WA">Washington</option>
             <option value="AK">Alaska</option>
             <option value="HI">Hawaii</option>
+
         </select>
 
         <label>Arrival Time</label>
-        <input type="time" id="arrivalTime" value="22:00">
 
-        <button id="closeParent">CLOSE</button>
-        <button id="saveParent">SAVE</button>
+        <input
+            type="time"
+            id="arrivalTime"
+            value="22:00"
+        >
+
+        <button id="closeParent">
+            CLOSE
+        </button>
+
+        <button id="saveParent">
+            SAVE
+        </button>
+
     </div>
+
 </div>
 
 <audio id="christmasMusic" loop>
-    <source src="pulsebox-jazz-christmas-432315.mp3" type="audio/mpeg">
+
+    <source
+        src="pulsebox-jazz-christmas-432315.mp3"
+        type="audio/mpeg"
+    >
+
 </audio>
 
 <script>
 
-const container = document.getElementById("globe");
+/* =====================================================
+   SCENE
+   ===================================================== */
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+const container =
+    document.getElementById("globe");
 
-const camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.01,
-    1000
+const scene =
+    new THREE.Scene();
+
+scene.background =
+    new THREE.Color(0x000000);
+
+
+/* =====================================================
+   CAMERA
+   ===================================================== */
+
+const camera =
+    new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth /
+        window.innerHeight,
+        0.01,
+        1000
+    );
+
+camera.position.set(
+    0,
+    1.4,
+    6.3
 );
 
-camera.position.set(0, 1.4, 6.3);
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true
-});
+/* =====================================================
+   RENDERER
+   ===================================================== */
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true
+    });
 
-container.appendChild(renderer.domElement);
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
+);
 
-/* CONTROLS */
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
 
-const controls = new THREE.OrbitControls(
-    camera,
+container.appendChild(
     renderer.domElement
 );
 
+
+/* =====================================================
+   CONTROLS
+   ===================================================== */
+
+const controls =
+    new THREE.OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+
 controls.minDistance = 2.5;
 controls.maxDistance = 12;
 
-/* LIGHTING */
+
+/* =====================================================
+   LIGHTING
+   ===================================================== */
 
 scene.add(
-    new THREE.AmbientLight(0xffffff, 1.0)
+    new THREE.AmbientLight(
+        0xffffff,
+        1.1
+    )
 );
 
 const sunLight =
-    new THREE.DirectionalLight(0xffffff, 2.2);
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.5
+    );
 
-sunLight.position.set(5, 4, 5);
+sunLight.position.set(
+    5,
+    4,
+    5
+);
 
-scene.add(sunLight);
+scene.add(
+    sunLight
+);
+
 
 /* =====================================================
    EARTH
@@ -368,9 +469,14 @@ const earth =
         earthMaterial
     );
 
-scene.add(earth);
+scene.add(
+    earth
+);
 
-/* ATMOSPHERE */
+
+/* =====================================================
+   ATMOSPHERE
+   ===================================================== */
 
 const atmosphereGeometry =
     new THREE.SphereGeometry(
@@ -393,10 +499,13 @@ const atmosphere =
         atmosphereMaterial
     );
 
-scene.add(atmosphere);
+scene.add(
+    atmosphere
+);
+
 
 /* =====================================================
-   ROUTE
+   SANTA ROUTE
    ===================================================== */
 
 const santaRoute = [
@@ -404,146 +513,128 @@ const santaRoute = [
     {
         name: "International Date Line",
         lat: 66,
-        lon: 180,
-        timezone: "UTC+14"
+        lon: 180
     },
 
     {
         name: "New Zealand",
         lat: -41.3,
-        lon: 174.8,
-        timezone: "UTC+12"
+        lon: 174.8
     },
 
     {
         name: "Australia",
         lat: -33.9,
-        lon: 151.2,
-        timezone: "UTC+11"
+        lon: 151.2
     },
 
     {
         name: "Japan",
         lat: 35.7,
-        lon: 139.7,
-        timezone: "UTC+9"
+        lon: 139.7
     },
 
     {
         name: "South Korea",
         lat: 37.5,
-        lon: 127,
-        timezone: "UTC+9"
+        lon: 127
     },
 
     {
         name: "China",
         lat: 39.9,
-        lon: 116.4,
-        timezone: "UTC+8"
+        lon: 116.4
     },
 
     {
         name: "India",
         lat: 28.6,
-        lon: 77.2,
-        timezone: "UTC+5:30"
+        lon: 77.2
     },
 
     {
         name: "Middle East",
         lat: 25.3,
-        lon: 55.3,
-        timezone: "UTC+4"
+        lon: 55.3
     },
 
     {
         name: "Europe",
         lat: 51.5,
-        lon: -0.1,
-        timezone: "UTC"
+        lon: -0.1
     },
 
     {
         name: "West Africa",
         lat: 6.5,
-        lon: 3.4,
-        timezone: "UTC+1"
+        lon: 3.4
     },
 
     {
         name: "Brazil",
         lat: -23.5,
-        lon: -46.6,
-        timezone: "UTC-3"
+        lon: -46.6
     },
 
     {
         name: "Puerto Rico",
         lat: 18.2,
-        lon: -66.5,
-        timezone: "UTC-4"
+        lon: -66.5
     },
 
     {
         name: "Dominican Republic",
         lat: 18.7,
-        lon: -70.2,
-        timezone: "UTC-4"
+        lon: -70.2
     },
 
     {
         name: "Eastern United States",
         lat: 38.9,
-        lon: -77,
-        timezone: "UTC-5"
+        lon: -77
     },
 
     {
         name: "Central United States",
         lat: 41.9,
-        lon: -87.6,
-        timezone: "UTC-6"
+        lon: -87.6
     },
 
     {
         name: "Mountain United States",
         lat: 39.7,
-        lon: -104.9,
-        timezone: "UTC-7"
+        lon: -104.9
     },
 
     {
         name: "Western United States",
         lat: 34,
-        lon: -118.2,
-        timezone: "UTC-8"
+        lon: -118.2
     },
 
     {
         name: "Alaska",
         lat: 61.2,
-        lon: -149.9,
-        timezone: "UTC-9"
+        lon: -149.9
     },
 
     {
         name: "Hawaii",
         lat: 21.3,
-        lon: -157.8,
-        timezone: "UTC-10"
+        lon: -157.8
     },
 
     {
         name: "North Pole",
         lat: 89,
-        lon: 0,
-        timezone: "Polar"
+        lon: 0
     }
+
 ];
 
+
 /* =====================================================
-   LAT / LONG
+   LAT / LONG TO 3D POSITION
    ===================================================== */
 
 function latLonToVector3(
@@ -553,10 +644,14 @@ function latLonToVector3(
 ) {
 
     const phi =
-        (90 - lat) * Math.PI / 180;
+        (90 - lat) *
+        Math.PI /
+        180;
 
     const theta =
-        (lon + 180) * Math.PI / 180;
+        (lon + 180) *
+        Math.PI /
+        180;
 
     return new THREE.Vector3(
 
@@ -574,6 +669,7 @@ function latLonToVector3(
     );
 }
 
+
 /* =====================================================
    SANTA MODEL
    ===================================================== */
@@ -581,30 +677,49 @@ function latLonToVector3(
 const MODEL_FILE =
     "santa_-_norad_santa_tracker.glb";
 
-/*
-   VERY CLOSE TO EARTH
-*/
-const SANTA_RADIUS = 2.18;
 
 /*
-   MODEL SIZE
+   Santa is very close to Earth's surface.
+
+   Earth = 2.00
+   Santa center = 2.25
+*/
+const SANTA_RADIUS = 2.25;
+
+
+/*
+   Keep the sleigh reasonably small.
 */
 const SANTA_SIZE = 0.20;
+
 
 const santaGroup =
     new THREE.Group();
 
-scene.add(santaGroup);
+santaGroup.visible = true;
+
+scene.add(
+    santaGroup
+);
+
 
 let santaModel = null;
+
 let santaLoaded = false;
+
 
 const loader =
     new THREE.GLTFLoader();
 
+
 document.getElementById(
     "loading"
 ).style.display = "block";
+
+
+/* =====================================================
+   LOAD GLB
+   ===================================================== */
 
 loader.load(
 
@@ -615,11 +730,21 @@ loader.load(
         santaModel =
             gltf.scene;
 
+
+        /*
+           Find model bounds.
+        */
+
         const box =
             new THREE.Box3()
                 .setFromObject(
                     santaModel
                 );
+
+
+        /*
+           Center the model.
+        */
 
         const center =
             box.getCenter(
@@ -629,6 +754,11 @@ loader.load(
         santaModel.position.sub(
             center
         );
+
+
+        /*
+           Scale model.
+        */
 
         const size =
             box.getSize(
@@ -642,7 +772,10 @@ loader.load(
                 size.z
             );
 
-        if (maxDimension > 0) {
+
+        if (
+            maxDimension > 0
+        ) {
 
             santaModel.scale.setScalar(
                 SANTA_SIZE /
@@ -651,21 +784,33 @@ loader.load(
 
         }
 
+
         /*
-           ONE-TIME MODEL ROTATION.
+           Correct the model's
+           original forward direction.
+
+           This happens ONLY ONCE.
         */
+
         santaModel.rotation.y =
             -Math.PI / 2;
+
 
         santaGroup.add(
             santaModel
         );
 
+
         santaLoaded = true;
 
-        document.getElementById(
-            "loading"
-        ).style.display = "none";
+
+        santaGroup.visible =
+            true;
+
+
+        /*
+           Start at first route point.
+        */
 
         const start =
             latLonToVector3(
@@ -674,14 +819,29 @@ loader.load(
                 SANTA_RADIUS
             );
 
+
         santaGroup.position.copy(
             start
         );
+
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        console.log(
+            "Santa loaded successfully."
+        );
+
     },
+
 
     function(xhr) {
 
-        if (xhr.total) {
+        if (
+            xhr.total
+        ) {
 
             const percent =
                 Math.round(
@@ -696,13 +856,16 @@ loader.load(
                 "Loading Santa's sleigh... " +
                 percent +
                 "%";
+
         }
+
     },
+
 
     function(error) {
 
         console.error(
-            "Santa model failed:",
+            "Santa GLB loading error:",
             error
         );
 
@@ -710,11 +873,14 @@ loader.load(
             "loading"
         ).textContent =
             "Santa's sleigh could not be loaded.";
+
     }
+
 );
 
+
 /* =====================================================
-   FLIGHT
+   FLIGHT VARIABLES
    ===================================================== */
 
 let tracking = false;
@@ -723,9 +889,19 @@ let routeIndex = 0;
 
 let segmentStartTime = 0;
 
-const SEGMENT_DURATION = 60000;
 
+/*
+   Slow NORAD-style movement.
+*/
+const SEGMENT_DURATION =
+    60000;
+
+
+/*
+   Camera follows Santa.
+*/
 let cameraFollowing = false;
+
 
 const cameraDesired =
     new THREE.Vector3();
@@ -733,8 +909,9 @@ const cameraDesired =
 const cameraTarget =
     new THREE.Vector3();
 
+
 /* =====================================================
-   ORIENTATION
+   ORIENT SANTA
    ===================================================== */
 
 function updateSantaOrientation(
@@ -747,11 +924,19 @@ function updateSantaOrientation(
             .clone()
             .normalize();
 
+
     const direction =
         nextPosition
             .clone()
-            .sub(currentPosition)
+            .sub(
+                currentPosition
+            )
             .normalize();
+
+
+    /*
+       Keep Santa tangent to Earth.
+    */
 
     direction.sub(
         up.clone().multiplyScalar(
@@ -759,20 +944,28 @@ function updateSantaOrientation(
         )
     ).normalize();
 
+
     if (
         direction.lengthSq() <
         0.001
     ) {
+
         return;
+
     }
+
 
     const targetPoint =
         currentPosition
             .clone()
-            .add(direction);
+            .add(
+                direction
+            );
+
 
     const matrix =
         new THREE.Matrix4();
+
 
     matrix.lookAt(
         currentPosition,
@@ -780,20 +973,28 @@ function updateSantaOrientation(
         up
     );
 
+
     const desiredQuaternion =
         new THREE.Quaternion()
             .setFromRotationMatrix(
                 matrix
             );
 
+
+    /*
+       Smooth turn.
+    */
+
     santaGroup.quaternion.slerp(
         desiredQuaternion,
         0.055
     );
+
 }
 
+
 /* =====================================================
-   START
+   START TRACKING
    ===================================================== */
 
 document.getElementById(
@@ -802,11 +1003,15 @@ document.getElementById(
     "click",
     function() {
 
-        if (!santaLoaded) {
+
+        if (
+            !santaLoaded
+        ) {
 
             document.getElementById(
                 "loading"
-            ).style.display = "block";
+            ).style.display =
+                "block";
 
             document.getElementById(
                 "loading"
@@ -814,16 +1019,27 @@ document.getElementById(
                 "Santa's sleigh is still loading...";
 
             return;
+
         }
+
 
         tracking = true;
 
         cameraFollowing = true;
 
+
         routeIndex = 0;
+
 
         segmentStartTime =
             performance.now();
+
+
+        /*
+           Put Santa directly
+           at the beginning
+           of the route.
+        */
 
         const start =
             latLonToVector3(
@@ -832,14 +1048,79 @@ document.getElementById(
                 SANTA_RADIUS
             );
 
+
         santaGroup.position.copy(
             start
         );
+
+
+        santaGroup.visible =
+            true;
+
+
+        /*
+           IMPORTANT:
+
+           Immediately move camera
+           close to Santa.
+        */
+
+        const outward =
+            santaGroup.position
+                .clone()
+                .normalize();
+
+
+        /*
+           Put camera above/outside
+           the Earth surface.
+
+           This makes sure Santa
+           is actually visible.
+        */
+
+        camera.position.copy(
+
+            santaGroup.position
+                .clone()
+                .add(
+                    outward.multiplyScalar(
+                        0.55
+                    )
+                )
+
+        );
+
+
+        cameraTarget.copy(
+            santaGroup.position
+        );
+
+
+        controls.target.copy(
+            santaGroup.position
+        );
+
+
+        camera.lookAt(
+            santaGroup.position
+        );
+
+
+        /*
+           Disable manual globe
+           movement while tracking.
+        */
+
+        controls.enabled =
+            false;
+
 
         document.getElementById(
             "startButton"
         ).textContent =
             "TRACKING ACTIVE";
+
 
         document.getElementById(
             "startButton"
@@ -847,14 +1128,15 @@ document.getElementById(
             "active"
         );
 
+
         document.getElementById(
             "status"
         ).textContent =
             "TRACKING";
 
-        controls.enabled = false;
     }
 );
+
 
 /* =====================================================
    MUSIC
@@ -865,13 +1147,16 @@ const music =
         "christmasMusic"
     );
 
+
 document.getElementById(
     "musicButton"
 ).addEventListener(
     "click",
     function() {
 
-        if (music.paused) {
+        if (
+            music.paused
+        ) {
 
             music.play()
                 .catch(
@@ -881,15 +1166,20 @@ document.getElementById(
             this.textContent =
                 "🔊 MUSIC ON";
 
-        } else {
+        }
+
+        else {
 
             music.pause();
 
             this.textContent =
                 "🎵 MUSIC";
+
         }
+
     }
 );
+
 
 /* =====================================================
    PARENT SETTINGS
@@ -900,6 +1190,7 @@ const parentModal =
         "parentModal"
     );
 
+
 document.getElementById(
     "parentButton"
 ).addEventListener(
@@ -908,8 +1199,10 @@ document.getElementById(
 
         parentModal.style.display =
             "flex";
+
     }
 );
+
 
 document.getElementById(
     "closeParent"
@@ -919,8 +1212,10 @@ document.getElementById(
 
         parentModal.style.display =
             "none";
+
     }
 );
+
 
 document.getElementById(
     "saveParent"
@@ -933,23 +1228,31 @@ document.getElementById(
                 "stateSelect"
             ).value;
 
+
         const time =
             document.getElementById(
                 "arrivalTime"
             ).value;
 
+
         localStorage.setItem(
             "santaParentSettings",
             JSON.stringify({
+
                 state: state,
+
                 arrivalTime: time
+
             })
         );
 
+
         parentModal.style.display =
             "none";
+
     }
 );
+
 
 /* =====================================================
    MAIN ANIMATION
@@ -961,42 +1264,63 @@ function animate() {
         animate
     );
 
+
     const now =
         performance.now();
 
-    /* SANTA FLIGHT */
+
+    /* =================================================
+       MOVE SANTA
+       ================================================= */
 
     if (
+
         tracking &&
+
         santaLoaded &&
+
         routeIndex <
         santaRoute.length - 1
+
     ) {
+
 
         const current =
             santaRoute[
                 routeIndex
             ];
 
+
         const next =
             santaRoute[
                 routeIndex + 1
             ];
 
+
         const progress =
             Math.min(
+
                 (
                     now -
                     segmentStartTime
                 ) /
                 SEGMENT_DURATION,
+
                 1
+
             );
+
+
+        /*
+           Smooth acceleration /
+           deceleration.
+        */
 
         const smoothProgress =
             progress *
             progress *
             (3 - 2 * progress);
+
 
         const startPosition =
             latLonToVector3(
@@ -1005,6 +1329,7 @@ function animate() {
                 SANTA_RADIUS
             );
 
+
         const endPosition =
             latLonToVector3(
                 next.lat,
@@ -1012,22 +1337,32 @@ function animate() {
                 SANTA_RADIUS
             );
 
+
         const startNorm =
             startPosition
                 .clone()
                 .normalize();
+
 
         const endNorm =
             endPosition
                 .clone()
                 .normalize();
 
+
         const angle =
             startNorm.angleTo(
                 endNorm
             );
 
+
         let position;
+
+
+        /*
+           Move across the
+           curved Earth.
+        */
 
         if (
             angle < 0.0001
@@ -1041,10 +1376,15 @@ function animate() {
                         smoothProgress
                     );
 
-        } else {
+        }
+
+        else {
 
             const sinAngle =
-                Math.sin(angle);
+                Math.sin(
+                    angle
+                );
+
 
             const a =
                 Math.sin(
@@ -1053,6 +1393,7 @@ function animate() {
                 ) /
                 sinAngle;
 
+
             const b =
                 Math.sin(
                     smoothProgress *
@@ -1060,30 +1401,47 @@ function animate() {
                 ) /
                 sinAngle;
 
+
             position =
                 startNorm
                     .clone()
                     .multiplyScalar(a)
+
                     .add(
+
                         endNorm
                             .clone()
                             .multiplyScalar(b)
+
                     )
+
                     .normalize()
+
                     .multiplyScalar(
                         SANTA_RADIUS
                     );
+
         }
+
 
         santaGroup.position.copy(
             position
         );
+
+
+        /*
+           Look slightly ahead.
+
+           This gives Santa time
+           to smoothly turn.
+        */
 
         const lookAhead =
             Math.min(
                 progress + 0.04,
                 1
             );
+
 
         const aheadNorm =
             startNorm
@@ -1094,20 +1452,32 @@ function animate() {
                 )
                 .normalize();
 
+
         const aheadPosition =
             aheadNorm.multiplyScalar(
                 SANTA_RADIUS
             );
+
 
         updateSantaOrientation(
             position,
             aheadPosition
         );
 
+
+        /*
+           Update location panel.
+        */
+
         document.getElementById(
             "location"
         ).textContent =
             current.name;
+
+
+        /*
+           Move to next route point.
+        */
 
         if (
             progress >= 1
@@ -1118,6 +1488,7 @@ function animate() {
             segmentStartTime =
                 now;
 
+
             if (
                 routeIndex >=
                 santaRoute.length - 1
@@ -1126,18 +1497,24 @@ function animate() {
                 routeIndex =
                     santaRoute.length - 1;
 
+
                 tracking = false;
+
 
                 document.getElementById(
                     "status"
                 ).textContent =
                     "ARRIVED";
+
             }
+
         }
+
     }
 
+
     /* =================================================
-       VERY CLOSE CAMERA
+       CLOSE SANTA CAMERA
        ================================================= */
 
     if (
@@ -1145,10 +1522,17 @@ function animate() {
         santaLoaded
     ) {
 
+
         const outward =
             santaGroup.position
                 .clone()
                 .normalize();
+
+
+        /*
+           Santa's current
+           forward direction.
+        */
 
         const actualForward =
             new THREE.Vector3(
@@ -1161,51 +1545,76 @@ function animate() {
             )
             .normalize();
 
+
         /*
-           EXTREMELY CLOSE CAMERA.
+           Camera sits just
+           behind and above Santa.
+
+           This is intentionally
+           VERY CLOSE.
         */
 
-        cameraDesired
-            .copy(
-                santaGroup.position
+        cameraDesired.copy(
+            santaGroup.position
+        );
+
+
+        cameraDesired.add(
+            outward.multiplyScalar(
+                0.38
             )
-            .add(
-                outward.multiplyScalar(
-                    0.20
-                )
+        );
+
+
+        cameraDesired.add(
+            actualForward.multiplyScalar(
+                -0.22
             )
-            .add(
-                actualForward.multiplyScalar(
-                    -0.16
-                )
-            );
+        );
+
 
         camera.position.lerp(
             cameraDesired,
-            0.18
+            0.20
         );
+
+
+        /*
+           Always look directly
+           at the sleigh.
+        */
 
         cameraTarget.copy(
             santaGroup.position
         );
 
+
         controls.target.lerp(
             cameraTarget,
-            0.20
+            0.25
         );
 
-        controls.enabled = false;
+
+        controls.enabled =
+            false;
+
     }
 
-    controls.update();
 
     renderer.render(
         scene,
         camera
     );
+
 }
 
+
+/* =====================================================
+   START ANIMATION
+   ===================================================== */
+
 animate();
+
 
 /* =====================================================
    RESIZE
@@ -1219,12 +1628,15 @@ window.addEventListener(
             window.innerWidth /
             window.innerHeight;
 
+
         camera.updateProjectionMatrix();
+
 
         renderer.setSize(
             window.innerWidth,
             window.innerHeight
         );
+
     }
 );
 
